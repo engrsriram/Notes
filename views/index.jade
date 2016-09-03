@@ -1,0 +1,103 @@
+extends layout
+
+mixin file(ui)
+  li
+    a(onclick="myjsfunc('file?file=#{ui.path1}&work=view')") #{ui.name}
+
+mixin pa(obj)
+  each objl in obj
+    li
+     if (objl.type == 'folder')
+            a(href='', aria-expanded='false')
+              | #{objl.name}
+              span.glyphicon.arrow
+            ul(aria-expanded='false')
+              + pa(objl.children)
+      else if (objl.type == 'file')
+        + file(objl)
+
+            
+mixin parseObject(obj)
+  if (obj.type == 'folder')
+    + pa(obj.children)
+
+
+
+block content
+    .clearfix
+      aside.sidebar
+        nav.sidebar-nav
+          ul#menu.metismenu
+            li.active
+              a(href='#', aria-expanded='true')
+                span.sidebar-nav-item-icon.fa.fa-github.fa-lg
+                span.sidebar-nav-item metisMenu
+                span.fa.arrow
+              ul(aria-expanded='true')
+                li
+                  a(href='https://github.com/onokumus/metisMenu')
+                    span.sidebar-nav-item-icon.fa.fa-code-fork
+                    |                   Fork
+                li
+                  a(href='https://github.com/onokumus/metisMenu')
+                    span.sidebar-nav-item-icon.fa.fa-star
+                    |                   Star
+                li
+                  a(href='https://github.com/onokumus/metisMenu/issues')
+                    span.sidebar-nav-item-icon.fa.fa-exclamation-triangle
+                    |                   Issues
+            + parseObject(vizJson) 
+
+      section.content
+        .col-xs-12
+          p.navbar-btn
+            a.btn.btn-default#edit Edit This Content!
+          .panel.panel-default
+            .panel-heading
+              | Code
+              span.pull-right
+                span.fa.fa-code
+            .panel-body(id="contents")
+              | 
+
+     
+              
+    script(src='vendor/jquery/jquery.js')
+    script(src='vendor/bootstrap/js/bootstrap.min.js')
+    script(src='vendor/metismenu/metisMenu.min.js')
+    script(src='vendor/bootstrap-switch/js/bootstrap-switch.min.js')
+    script.
+      var CurrentPage = './public/data/file.md&work=edit';
+      $(function() {
+      $('#menu').metisMenu();
+      });
+      window.addEventListener("load", function(evt) {
+        $.ajax({
+            url: 'file?file=./public/data/file.md&work=view',
+            contentType: 'plain/text',
+            success: function(response) {
+                var tbodyEl = $('#contents');
+                tbodyEl.html(response);
+            }
+        });
+      });
+      $(document).ready(function() {
+      $('#edit').click(function() {
+            window.location.replace("/dt" +CurrentPage);
+          });
+        });
+      function myjsfunc(a){
+        //console.log(a);
+        //document.getElementById("contents").innerHTML = a;
+
+        $.ajax({
+            url: a,
+            contentType: 'plain/text',
+            success: function(response) {
+                CurrentPage = a.replace('work=view', 'work=edit');
+                var tbodyEl = $('#contents');
+                tbodyEl.html(response);
+            }
+        });
+      }
+    script(src='vendor/prismjs/prism.js')

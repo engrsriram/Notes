@@ -1,0 +1,25 @@
+extends editlayout
+
+block content
+  #editor
+  .rendered(id="contents")
+  script(src='vendor/jquery/jquery.js')
+  script(src='./edit/build.js?#{filecon}')
+  script.
+    var filename="#{filecon}";
+    window.addEventListener("load", function(evt) {
+      var urlto = 'file?file='+ filename + '&work=edit';
+      //console.log(urlto);
+      $.ajax({
+        url: urlto,
+        contentType: 'plain/text',
+        success: function(response) {
+          var tbodyEl = $('#contents');
+          tbodyEl.html(response);
+          //var editor = initEditor(response);
+          //renderEdits();
+        }
+      });
+      
+    });
+ 
